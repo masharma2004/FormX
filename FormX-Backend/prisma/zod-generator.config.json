@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "pure": {
+      "enabled": true
+    },
+    "input": {
+      "enabled": true,
+      "partial": true,
+      "omit": true,
+      "pick": true,
+      "extend": true
+    },
+    "result": {
+      "enabled": true,
+      "omit": true,
+      "extend": true
+    }
+  },
+  "globalExclusions": {
+    "result": [
+      "password",
+      "hashedPassword",
+      "secret*"
+    ]
+  },
+  "emit": {
+    "pureModels": true,
+    "zodSchemas": false,
+    "validator": true
+  }
+}

@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider = "prisma-zod-generator"
+  config = "./zod-generator.config.json"
+  output   = "../../FormX-Frontend/src/lib/zod"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  settings  Json?    // User settings (NocoDB credentials, preferences, etc.)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  forms     Form[]
+  scripts   Script[]
+  aiUsage   AiUsage[]
+  submissions Submission[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model Form {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  schema      Json     // Form field definitions
+  settings    Json?     // Styling, validation rules, auth settings
+  isActive    Boolean  @default(true)
+  isPublic    Boolean  @default(false)
+  userId      String
+  
+  user        User     @relation(fields: [userId], references: [id])
+  submissions Submission[]
+  scripts     FormScript[]
+  nocodbTable NocodbTable?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("forms")
+}
+
+model Submission {
+  id        String   @id @default(cuid())
+  data      Json     // Form response data
+  metadata  Json?    // IP, user agent, etc.
+  status    String   @default("pending") // pending, processing, completed, failed
+  createdAt DateTime @default(now())
+  formId    String
+  userId    String?
+
+  form      Form     @relation(fields: [formId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([formId])
+  @@index([userId])
+
+  @@map("submissions")
+}
+
+model Script {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @db.Text // JavaScript code
+  description String?
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id])
+  formScripts FormScript[]
+
+  @@map("scripts")
+}
+
+model FormScript {
+  id       String @id @default(cuid())
+  event    String // 'beforeSubmit', 'afterSubmit', 'validate'
+  order    Int    @default(0)
+  enabled  Boolean @default(true)
+  formId   String
+  scriptId String
+  
+  form     Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+  script   Script @relation(fields: [scriptId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([formId, scriptId, event])
+  @@map("form_scripts")
+}
+
+model NocodbTable {
+  id       String @id @default(cuid())
+  tableId  String @unique // NocoDB table ID
+  formId   String @unique
+  form     Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+  metadata Json?  // Store table structure info
+  
+  createdAt DateTime @default(now())
+
+  @@map("nocodb_tables")
+}
+
+model AiUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  operation String   // 'generateScript', 'generateForm', 'suggestValidation'
+  model     String   // 'gemini-pro'
+  date      DateTime
+  tokensUsed Int     @default(0)
+  cost      Float?
+  metadata  Json?
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, date])
+  @@map("ai_usage")
+}
