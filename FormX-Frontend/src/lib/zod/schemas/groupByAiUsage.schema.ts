@@ -1,0 +1,15 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { AiUsageWhereInputObjectSchema as AiUsageWhereInputObjectSchema } from './objects/AiUsageWhereInput.schema';
+import { AiUsageOrderByWithAggregationInputObjectSchema as AiUsageOrderByWithAggregationInputObjectSchema } from './objects/AiUsageOrderByWithAggregationInput.schema';
+import { AiUsageScalarWhereWithAggregatesInputObjectSchema as AiUsageScalarWhereWithAggregatesInputObjectSchema } from './objects/AiUsageScalarWhereWithAggregatesInput.schema';
+import { AiUsageScalarFieldEnumSchema } from './enums/AiUsageScalarFieldEnum.schema';
+import { AiUsageCountAggregateInputObjectSchema as AiUsageCountAggregateInputObjectSchema } from './objects/AiUsageCountAggregateInput.schema';
+import { AiUsageMinAggregateInputObjectSchema as AiUsageMinAggregateInputObjectSchema } from './objects/AiUsageMinAggregateInput.schema';
+import { AiUsageMaxAggregateInputObjectSchema as AiUsageMaxAggregateInputObjectSchema } from './objects/AiUsageMaxAggregateInput.schema';
+import { AiUsageAvgAggregateInputObjectSchema as AiUsageAvgAggregateInputObjectSchema } from './objects/AiUsageAvgAggregateInput.schema';
+import { AiUsageSumAggregateInputObjectSchema as AiUsageSumAggregateInputObjectSchema } from './objects/AiUsageSumAggregateInput.schema';
+
+export const AiUsageGroupBySchema: z.ZodType<Prisma.AiUsageGroupByArgs> = z.object({ where: AiUsageWhereInputObjectSchema.optional(), orderBy: z.union([AiUsageOrderByWithAggregationInputObjectSchema, AiUsageOrderByWithAggregationInputObjectSchema.array()]).optional(), having: AiUsageScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(AiUsageScalarFieldEnumSchema), _count: z.union([ z.literal(true), AiUsageCountAggregateInputObjectSchema ]).optional(), _min: AiUsageMinAggregateInputObjectSchema.optional(), _max: AiUsageMaxAggregateInputObjectSchema.optional(), _avg: AiUsageAvgAggregateInputObjectSchema.optional(), _sum: AiUsageSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.AiUsageGroupByArgs>;
+
+export const AiUsageGroupByZodSchema = z.object({ where: AiUsageWhereInputObjectSchema.optional(), orderBy: z.union([AiUsageOrderByWithAggregationInputObjectSchema, AiUsageOrderByWithAggregationInputObjectSchema.array()]).optional(), having: AiUsageScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(AiUsageScalarFieldEnumSchema), _count: z.union([ z.literal(true), AiUsageCountAggregateInputObjectSchema ]).optional(), _min: AiUsageMinAggregateInputObjectSchema.optional(), _max: AiUsageMaxAggregateInputObjectSchema.optional(), _avg: AiUsageAvgAggregateInputObjectSchema.optional(), _sum: AiUsageSumAggregateInputObjectSchema.optional() }).strict();

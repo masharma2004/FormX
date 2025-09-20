@@ -1,0 +1,13 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { NocodbTableWhereInputObjectSchema as NocodbTableWhereInputObjectSchema } from './objects/NocodbTableWhereInput.schema';
+import { NocodbTableOrderByWithAggregationInputObjectSchema as NocodbTableOrderByWithAggregationInputObjectSchema } from './objects/NocodbTableOrderByWithAggregationInput.schema';
+import { NocodbTableScalarWhereWithAggregatesInputObjectSchema as NocodbTableScalarWhereWithAggregatesInputObjectSchema } from './objects/NocodbTableScalarWhereWithAggregatesInput.schema';
+import { NocodbTableScalarFieldEnumSchema } from './enums/NocodbTableScalarFieldEnum.schema';
+import { NocodbTableCountAggregateInputObjectSchema as NocodbTableCountAggregateInputObjectSchema } from './objects/NocodbTableCountAggregateInput.schema';
+import { NocodbTableMinAggregateInputObjectSchema as NocodbTableMinAggregateInputObjectSchema } from './objects/NocodbTableMinAggregateInput.schema';
+import { NocodbTableMaxAggregateInputObjectSchema as NocodbTableMaxAggregateInputObjectSchema } from './objects/NocodbTableMaxAggregateInput.schema';
+
+export const NocodbTableGroupBySchema: z.ZodType<Prisma.NocodbTableGroupByArgs> = z.object({ where: NocodbTableWhereInputObjectSchema.optional(), orderBy: z.union([NocodbTableOrderByWithAggregationInputObjectSchema, NocodbTableOrderByWithAggregationInputObjectSchema.array()]).optional(), having: NocodbTableScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(NocodbTableScalarFieldEnumSchema), _count: z.union([ z.literal(true), NocodbTableCountAggregateInputObjectSchema ]).optional(), _min: NocodbTableMinAggregateInputObjectSchema.optional(), _max: NocodbTableMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.NocodbTableGroupByArgs>;
+
+export const NocodbTableGroupByZodSchema = z.object({ where: NocodbTableWhereInputObjectSchema.optional(), orderBy: z.union([NocodbTableOrderByWithAggregationInputObjectSchema, NocodbTableOrderByWithAggregationInputObjectSchema.array()]).optional(), having: NocodbTableScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(NocodbTableScalarFieldEnumSchema), _count: z.union([ z.literal(true), NocodbTableCountAggregateInputObjectSchema ]).optional(), _min: NocodbTableMinAggregateInputObjectSchema.optional(), _max: NocodbTableMaxAggregateInputObjectSchema.optional() }).strict();

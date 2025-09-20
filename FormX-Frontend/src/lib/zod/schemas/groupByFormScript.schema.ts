@@ -1,0 +1,15 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { FormScriptWhereInputObjectSchema as FormScriptWhereInputObjectSchema } from './objects/FormScriptWhereInput.schema';
+import { FormScriptOrderByWithAggregationInputObjectSchema as FormScriptOrderByWithAggregationInputObjectSchema } from './objects/FormScriptOrderByWithAggregationInput.schema';
+import { FormScriptScalarWhereWithAggregatesInputObjectSchema as FormScriptScalarWhereWithAggregatesInputObjectSchema } from './objects/FormScriptScalarWhereWithAggregatesInput.schema';
+import { FormScriptScalarFieldEnumSchema } from './enums/FormScriptScalarFieldEnum.schema';
+import { FormScriptCountAggregateInputObjectSchema as FormScriptCountAggregateInputObjectSchema } from './objects/FormScriptCountAggregateInput.schema';
+import { FormScriptMinAggregateInputObjectSchema as FormScriptMinAggregateInputObjectSchema } from './objects/FormScriptMinAggregateInput.schema';
+import { FormScriptMaxAggregateInputObjectSchema as FormScriptMaxAggregateInputObjectSchema } from './objects/FormScriptMaxAggregateInput.schema';
+import { FormScriptAvgAggregateInputObjectSchema as FormScriptAvgAggregateInputObjectSchema } from './objects/FormScriptAvgAggregateInput.schema';
+import { FormScriptSumAggregateInputObjectSchema as FormScriptSumAggregateInputObjectSchema } from './objects/FormScriptSumAggregateInput.schema';
+
+export const FormScriptGroupBySchema: z.ZodType<Prisma.FormScriptGroupByArgs> = z.object({ where: FormScriptWhereInputObjectSchema.optional(), orderBy: z.union([FormScriptOrderByWithAggregationInputObjectSchema, FormScriptOrderByWithAggregationInputObjectSchema.array()]).optional(), having: FormScriptScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(FormScriptScalarFieldEnumSchema), _count: z.union([ z.literal(true), FormScriptCountAggregateInputObjectSchema ]).optional(), _min: FormScriptMinAggregateInputObjectSchema.optional(), _max: FormScriptMaxAggregateInputObjectSchema.optional(), _avg: FormScriptAvgAggregateInputObjectSchema.optional(), _sum: FormScriptSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.FormScriptGroupByArgs>;
+
+export const FormScriptGroupByZodSchema = z.object({ where: FormScriptWhereInputObjectSchema.optional(), orderBy: z.union([FormScriptOrderByWithAggregationInputObjectSchema, FormScriptOrderByWithAggregationInputObjectSchema.array()]).optional(), having: FormScriptScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(FormScriptScalarFieldEnumSchema), _count: z.union([ z.literal(true), FormScriptCountAggregateInputObjectSchema ]).optional(), _min: FormScriptMinAggregateInputObjectSchema.optional(), _max: FormScriptMaxAggregateInputObjectSchema.optional(), _avg: FormScriptAvgAggregateInputObjectSchema.optional(), _sum: FormScriptSumAggregateInputObjectSchema.optional() }).strict();

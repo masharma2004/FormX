@@ -1,0 +1,17 @@
+import * as z from 'zod';
+// prettier-ignore
+export const UserResultSchema = z.object({
+    id: z.string(),
+    email: z.string(),
+    name: z.string().nullable(),
+    settings: z.unknown().nullable(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+    forms: z.array(z.unknown()),
+    scripts: z.array(z.unknown()),
+    aiUsage: z.array(z.unknown()),
+    submissions: z.array(z.unknown()),
+    passwordResetTokens: z.array(z.unknown())
+}).strict();
+
+export type UserResultType = z.infer<typeof UserResultSchema>;

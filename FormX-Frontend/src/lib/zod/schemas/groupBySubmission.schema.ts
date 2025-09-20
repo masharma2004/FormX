@@ -1,0 +1,13 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { SubmissionWhereInputObjectSchema as SubmissionWhereInputObjectSchema } from './objects/SubmissionWhereInput.schema';
+import { SubmissionOrderByWithAggregationInputObjectSchema as SubmissionOrderByWithAggregationInputObjectSchema } from './objects/SubmissionOrderByWithAggregationInput.schema';
+import { SubmissionScalarWhereWithAggregatesInputObjectSchema as SubmissionScalarWhereWithAggregatesInputObjectSchema } from './objects/SubmissionScalarWhereWithAggregatesInput.schema';
+import { SubmissionScalarFieldEnumSchema } from './enums/SubmissionScalarFieldEnum.schema';
+import { SubmissionCountAggregateInputObjectSchema as SubmissionCountAggregateInputObjectSchema } from './objects/SubmissionCountAggregateInput.schema';
+import { SubmissionMinAggregateInputObjectSchema as SubmissionMinAggregateInputObjectSchema } from './objects/SubmissionMinAggregateInput.schema';
+import { SubmissionMaxAggregateInputObjectSchema as SubmissionMaxAggregateInputObjectSchema } from './objects/SubmissionMaxAggregateInput.schema';
+
+export const SubmissionGroupBySchema: z.ZodType<Prisma.SubmissionGroupByArgs> = z.object({ where: SubmissionWhereInputObjectSchema.optional(), orderBy: z.union([SubmissionOrderByWithAggregationInputObjectSchema, SubmissionOrderByWithAggregationInputObjectSchema.array()]).optional(), having: SubmissionScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(SubmissionScalarFieldEnumSchema), _count: z.union([ z.literal(true), SubmissionCountAggregateInputObjectSchema ]).optional(), _min: SubmissionMinAggregateInputObjectSchema.optional(), _max: SubmissionMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.SubmissionGroupByArgs>;
+
+export const SubmissionGroupByZodSchema = z.object({ where: SubmissionWhereInputObjectSchema.optional(), orderBy: z.union([SubmissionOrderByWithAggregationInputObjectSchema, SubmissionOrderByWithAggregationInputObjectSchema.array()]).optional(), having: SubmissionScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(SubmissionScalarFieldEnumSchema), _count: z.union([ z.literal(true), SubmissionCountAggregateInputObjectSchema ]).optional(), _min: SubmissionMinAggregateInputObjectSchema.optional(), _max: SubmissionMaxAggregateInputObjectSchema.optional() }).strict();

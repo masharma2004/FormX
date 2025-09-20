@@ -1,0 +1,12 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { PasswordResetTokenOrderByWithRelationInputObjectSchema as PasswordResetTokenOrderByWithRelationInputObjectSchema } from './objects/PasswordResetTokenOrderByWithRelationInput.schema';
+import { PasswordResetTokenWhereInputObjectSchema as PasswordResetTokenWhereInputObjectSchema } from './objects/PasswordResetTokenWhereInput.schema';
+import { PasswordResetTokenWhereUniqueInputObjectSchema as PasswordResetTokenWhereUniqueInputObjectSchema } from './objects/PasswordResetTokenWhereUniqueInput.schema';
+import { PasswordResetTokenCountAggregateInputObjectSchema as PasswordResetTokenCountAggregateInputObjectSchema } from './objects/PasswordResetTokenCountAggregateInput.schema';
+import { PasswordResetTokenMinAggregateInputObjectSchema as PasswordResetTokenMinAggregateInputObjectSchema } from './objects/PasswordResetTokenMinAggregateInput.schema';
+import { PasswordResetTokenMaxAggregateInputObjectSchema as PasswordResetTokenMaxAggregateInputObjectSchema } from './objects/PasswordResetTokenMaxAggregateInput.schema';
+
+export const PasswordResetTokenAggregateSchema: z.ZodType<Prisma.PasswordResetTokenAggregateArgs> = z.object({ orderBy: z.union([PasswordResetTokenOrderByWithRelationInputObjectSchema, PasswordResetTokenOrderByWithRelationInputObjectSchema.array()]).optional(), where: PasswordResetTokenWhereInputObjectSchema.optional(), cursor: PasswordResetTokenWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), PasswordResetTokenCountAggregateInputObjectSchema ]).optional(), _min: PasswordResetTokenMinAggregateInputObjectSchema.optional(), _max: PasswordResetTokenMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.PasswordResetTokenAggregateArgs>;
+
+export const PasswordResetTokenAggregateZodSchema = z.object({ orderBy: z.union([PasswordResetTokenOrderByWithRelationInputObjectSchema, PasswordResetTokenOrderByWithRelationInputObjectSchema.array()]).optional(), where: PasswordResetTokenWhereInputObjectSchema.optional(), cursor: PasswordResetTokenWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), PasswordResetTokenCountAggregateInputObjectSchema ]).optional(), _min: PasswordResetTokenMinAggregateInputObjectSchema.optional(), _max: PasswordResetTokenMaxAggregateInputObjectSchema.optional() }).strict();

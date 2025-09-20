@@ -1,0 +1,12 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { SubmissionOrderByWithRelationInputObjectSchema as SubmissionOrderByWithRelationInputObjectSchema } from './objects/SubmissionOrderByWithRelationInput.schema';
+import { SubmissionWhereInputObjectSchema as SubmissionWhereInputObjectSchema } from './objects/SubmissionWhereInput.schema';
+import { SubmissionWhereUniqueInputObjectSchema as SubmissionWhereUniqueInputObjectSchema } from './objects/SubmissionWhereUniqueInput.schema';
+import { SubmissionCountAggregateInputObjectSchema as SubmissionCountAggregateInputObjectSchema } from './objects/SubmissionCountAggregateInput.schema';
+import { SubmissionMinAggregateInputObjectSchema as SubmissionMinAggregateInputObjectSchema } from './objects/SubmissionMinAggregateInput.schema';
+import { SubmissionMaxAggregateInputObjectSchema as SubmissionMaxAggregateInputObjectSchema } from './objects/SubmissionMaxAggregateInput.schema';
+
+export const SubmissionAggregateSchema: z.ZodType<Prisma.SubmissionAggregateArgs> = z.object({ orderBy: z.union([SubmissionOrderByWithRelationInputObjectSchema, SubmissionOrderByWithRelationInputObjectSchema.array()]).optional(), where: SubmissionWhereInputObjectSchema.optional(), cursor: SubmissionWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), SubmissionCountAggregateInputObjectSchema ]).optional(), _min: SubmissionMinAggregateInputObjectSchema.optional(), _max: SubmissionMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.SubmissionAggregateArgs>;
+
+export const SubmissionAggregateZodSchema = z.object({ orderBy: z.union([SubmissionOrderByWithRelationInputObjectSchema, SubmissionOrderByWithRelationInputObjectSchema.array()]).optional(), where: SubmissionWhereInputObjectSchema.optional(), cursor: SubmissionWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), SubmissionCountAggregateInputObjectSchema ]).optional(), _min: SubmissionMinAggregateInputObjectSchema.optional(), _max: SubmissionMaxAggregateInputObjectSchema.optional() }).strict();

@@ -1,0 +1,12 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { NocodbTableOrderByWithRelationInputObjectSchema as NocodbTableOrderByWithRelationInputObjectSchema } from './objects/NocodbTableOrderByWithRelationInput.schema';
+import { NocodbTableWhereInputObjectSchema as NocodbTableWhereInputObjectSchema } from './objects/NocodbTableWhereInput.schema';
+import { NocodbTableWhereUniqueInputObjectSchema as NocodbTableWhereUniqueInputObjectSchema } from './objects/NocodbTableWhereUniqueInput.schema';
+import { NocodbTableCountAggregateInputObjectSchema as NocodbTableCountAggregateInputObjectSchema } from './objects/NocodbTableCountAggregateInput.schema';
+import { NocodbTableMinAggregateInputObjectSchema as NocodbTableMinAggregateInputObjectSchema } from './objects/NocodbTableMinAggregateInput.schema';
+import { NocodbTableMaxAggregateInputObjectSchema as NocodbTableMaxAggregateInputObjectSchema } from './objects/NocodbTableMaxAggregateInput.schema';
+
+export const NocodbTableAggregateSchema: z.ZodType<Prisma.NocodbTableAggregateArgs> = z.object({ orderBy: z.union([NocodbTableOrderByWithRelationInputObjectSchema, NocodbTableOrderByWithRelationInputObjectSchema.array()]).optional(), where: NocodbTableWhereInputObjectSchema.optional(), cursor: NocodbTableWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), NocodbTableCountAggregateInputObjectSchema ]).optional(), _min: NocodbTableMinAggregateInputObjectSchema.optional(), _max: NocodbTableMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.NocodbTableAggregateArgs>;
+
+export const NocodbTableAggregateZodSchema = z.object({ orderBy: z.union([NocodbTableOrderByWithRelationInputObjectSchema, NocodbTableOrderByWithRelationInputObjectSchema.array()]).optional(), where: NocodbTableWhereInputObjectSchema.optional(), cursor: NocodbTableWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), NocodbTableCountAggregateInputObjectSchema ]).optional(), _min: NocodbTableMinAggregateInputObjectSchema.optional(), _max: NocodbTableMaxAggregateInputObjectSchema.optional() }).strict();
