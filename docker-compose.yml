@@ -1,0 +1,46 @@
+version: "3.9"
+
+# Local dev infrastructure for FormX.
+# Credentials below match FormX-Backend/.env's DATABASE_URL so `npx prisma migrate dev`
+# works out of the box against this Postgres container.
+# Note: FormX-Backend/.env currently points REDIS_HOST/REDIS_PORT at a hosted Redis
+# Cloud instance rather than this local `redis` service - the local redis
+# service is provided as an offline-friendly fallback. To use it, point
+# REDIS_HOST=localhost / REDIS_PORT=6379 / REDIS_PASSWORD= (empty) in .env.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: formx-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "Kinjkratareef@123"
+      POSTGRES_DB: formx
+    ports:
+      - "5432:5432"
+    volumes:
+      - formx_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: formx-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - formx_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  formx_postgres_data:
+  formx_redis_data:
