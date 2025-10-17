@@ -1,6 +1,10 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import * as vm from 'vm';
+import ivm from 'isolated-vm';
+
+const SCRIPT_TIMEOUT_MS = 5000;
+const SCRIPT_MEMORY_LIMIT_MB = 32;
 
 interface ScriptExecutionContext {
   formData?: Record<string, unknown>;
@@ -274,46 +278,72 @@ export class ScriptsService {
     this.logger.log(`📊 Context has ${(context.existingSubmissions as unknown[])?.length ?? 0} existing submissions`);
     this.logger.log(`📝 FormData keys: ${Object.keys(context.formData || {}).join(', ')}`);
 
+    // Each run gets its own V8 isolate: no shared heap with the server, a hard
+    // memory cap, and a wall-clock limit that also covers async code.
+    const isolate = new ivm.Isolate({ memoryLimit: SCRIPT_MEMORY_LIMIT_MB });
+    let timer: NodeJS.Timeout | undefined;
+
     try {
-      // Create utility functions
-      const utils = {
-        validateEmail: (email: string) =>
-          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
-        validatePhone: (phone: string) =>
-          /^[+]?[1-9][\d]{0,15}$/.test(phone.replace(/[\s\-()]/g, '')),
-        validateUrl: (url: string) => {
+      const vmContext = await isolate.createContext();
+      const jail = vmContext.global;
+
+      // Only plain data crosses the boundary (functions are dropped, Dates survive the copy)
+      const data: Record<string, unknown> = {};
+      const asyncFns: string[] = [];
+      for (const [key, value] of Object.entries(context)) {
+        if (typeof value === 'function') {
+          // Host async helpers (queryForm/querySheet) become promise-returning calls
+          await jail.set(`__fn_${key}`, new ivm.Reference(value));
+          asyncFns.push(key);
+        } else if (value !== undefined) {
+          data[key] = value;
+        }
+      }
+      await jail.set('context', new ivm.ExternalCopy(data).copyInto());
+
+      const logger = this.logger;
+      await jail.set(
+        '__log',
+        new ivm.Callback((level: string, msg: string) => {
+          if (level === 'error') logger.error(`Script: ${msg}`);
+          else if (level === 'warn') logger.warn(`Script: ${msg}`);
+          else logger.log(`Script: ${msg}`);
+        }),
+      );
+      await jail.set(
+        '__validateUrl',
+        new ivm.Callback((url: unknown) => {
           try {
-            new URL(url);
+            new URL(String(url));
             return true;
           } catch {
             return false;
           }
-        },
-      };
+        }),
+      );
 
-      // Create sandbox with safe globals
-      const sandbox: vm.Context = {
-        context: { ...context },
-        utils,
-        console: {
-          log: (...args: any[]) => this.logger.log(`Script: ${args.join(' ')}`),
-          error: (...args: any[]) => this.logger.error(`Script: ${args.join(' ')}`),
-          warn: (...args: any[]) => this.logger.warn(`Script: ${args.join(' ')}`),
-        },
-        JSON,
-        Date,
-        Math,
-        RegExp,
-        String,
-        Number,
-        Boolean,
-        Array,
-        Object,
-        Promise,
-        result: undefined as any,
-      };
-
-      vm.createContext(sandbox);
+      // Same helpers as before: context, utils.*, console.*, and the language built-ins
+      const bootstrap = String.raw`
+        const fmt = (a) => a.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
+        globalThis.console = {
+          log: (...a) => __log('log', fmt(a)),
+          error: (...a) => __log('error', fmt(a)),
+          warn: (...a) => __log('warn', fmt(a)),
+        };
+        globalThis.utils = {
+          validateEmail: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+          validatePhone: (phone) =>
+            /^[+]?[1-9][\d]{0,15}$/.test(String(phone).replace(/[\s\-()]/g, '')),
+          validateUrl: (url) => __validateUrl(url),
+        };
+      ` + asyncFns
+        .map(
+          (k) =>
+            `context.${k} = async (...a) => __fn_${k}.apply(undefined, a, ` +
+            `{ arguments: { copy: true }, result: { promise: true, copy: true } });`,
+        )
+        .join('\n');
+      await vmContext.eval(bootstrap);
 
       // Wrap user code in async IIFE
       const wrappedCode = `
@@ -323,18 +353,26 @@ export class ScriptsService {
           } catch (error) {
             return { __error: error.message };
           }
-        })().then(r => { result = r; });
+        })()
       `;
 
-      // Run with timeout
-      const script = new vm.Script(wrappedCode);
-      script.runInContext(sandbox, { timeout: 5000 });
-
-      // Wait for async execution
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // The isolate timeout only stops synchronous loops; a microtask loop such as
+      // `await 0; while (true) {}` needs the wall-clock race, which disposes the isolate.
+      const run = vmContext.eval(wrappedCode, {
+        timeout: SCRIPT_TIMEOUT_MS,
+        promise: true,
+        copy: true,
+      });
+      run.catch(() => undefined);
+      const expired = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          isolate.dispose();
+          reject(new Error(`Script timed out after ${SCRIPT_TIMEOUT_MS}ms`));
+        }, SCRIPT_TIMEOUT_MS);
+      });
+      const result: Record<string, any> | undefined = await Promise.race([run, expired]);
 
       const executionTime = Date.now() - startTime;
-      const result = sandbox.result;
 
       if (
         result &&
@@ -368,6 +406,9 @@ export class ScriptsService {
         error: error instanceof Error ? error.message : String(error),
         executionTime,
       };
+    } finally {
+      if (timer) clearTimeout(timer);
+      if (!isolate.isDisposed) isolate.dispose();
     }
   }
 
