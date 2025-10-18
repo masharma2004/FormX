@@ -325,9 +325,10 @@ export class FormsService {
           existingSubmissions: friendlyExistingSubmissions,
         });
 
-        if (!result?.success) {
+        // A validate script that returns false rejects the submission, same as a throw
+        if (!result?.success || result.result === false) {
           throw new BadRequestException(
-            `Validation failed: ${String(result?.error ?? 'Unknown error')}`,
+            `Validation failed: ${String(result?.error ?? (result?.success ? 'Validation script returned false' : 'Unknown error'))}`,
           );
         }
       }

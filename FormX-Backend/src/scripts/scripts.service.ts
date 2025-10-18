@@ -25,7 +25,7 @@ interface ScriptExecutionContext {
 
 export interface ScriptExecutionResult {
   success: boolean;
-  result?: Record<string, any>;
+  result?: unknown;
   error?: string;
   executionTime: number;
 }
@@ -370,7 +370,7 @@ export class ScriptsService {
           reject(new Error(`Script timed out after ${SCRIPT_TIMEOUT_MS}ms`));
         }, SCRIPT_TIMEOUT_MS);
       });
-      const result: Record<string, any> | undefined = await Promise.race([run, expired]);
+      const result: unknown = await Promise.race([run, expired]);
 
       const executionTime = Date.now() - startTime;
 
