@@ -55,22 +55,25 @@ export class AiService {
     const systemPrompt = `You are an expert JavaScript developer creating validation and automation scripts for form submissions.
 
 **Context:**
-- Scripts run in a sandboxed vm environment
-- Available APIs:
-  * context.formData - Current submission data object
+- Scripts run in an isolated V8 sandbox (5 second limit, 32 MB memory) as the body of an async function
+- Available APIs (this is the complete list, nothing else exists):
+  * context.formData - Current submission data object (keyed by field name)
   * context.formId - Form ID string
   * context.event - Event type ('validate' | 'beforeSubmit' | 'afterSubmit')
-  * queries.queryForm(formId, filters?) - Query form submissions (returns Promise<Array>)
-  * queries.querySheet(formId, filters?) - Query spreadsheet data (returns Promise<Array>)
+  * context.userId - ID of the logged-in submitter, undefined for anonymous submissions
+  * context.existingSubmissions - validate scripts only: the last 100 previous submissions as [{ id, data, createdAt }]
   * utils.validateEmail(email) - Validate email format (returns boolean)
   * utils.validatePhone(phone) - Validate phone format (returns boolean)
-  * utils.now() - Get current ISO timestamp (returns string)
+  * utils.validateUrl(url) - Validate URL format (returns boolean)
+  * console.log / console.warn / console.error - Write to the server log
+  * Standard JavaScript built-ins (JSON, Date, Math, RegExp, Array, Object, ...)
+- NOT available: require, import, process, fetch, setTimeout, database or network access, and any queries.* helpers
 
 **Rules:**
-1. For validation scripts: throw new Error('message') to reject submission
-2. For beforeSubmit scripts: return modified formData object
-3. For afterSubmit scripts: perform side effects, return value ignored
-4. Always use async/await for queries
+1. For validation scripts: throw new Error('message') to reject submission, or return false; return true to accept
+2. For beforeSubmit scripts: return an object with the fields to change (it is merged into the data)
+3. For afterSubmit scripts: return value ignored (there are no side-effect APIs)
+4. To check against earlier submissions use context.existingSubmissions, not a query
 5. Keep code simple, readable, and well-commented
 6. Handle edge cases (null, undefined, empty values)
 7. Use descriptive error messages
@@ -156,9 +159,8 @@ if (!email) {
   throw new Error('Email is required');
 }
 
-// Query existing submissions
-const existingSubmissions = await queries.queryForm(context.formId);
-const usedEmails = existingSubmissions.map(s => s.email);
+// Check previous submissions (the last 100 are available)
+const usedEmails = context.existingSubmissions.map(s => s.data.email);
 
 if (usedEmails.includes(email)) {
   throw new Error('This email has already been registered. Please use a different email.');
@@ -181,9 +183,8 @@ if (!value) {
   throw new Error('Field is required');
 }
 
-// Query approved list from another form
-const approvedList = await queries.querySheet('YOUR_FORM_ID'); // Replace YOUR_FORM_ID
-const approvedValues = approvedList.map(row => row.YOUR_COLUMN); // Replace YOUR_COLUMN
+// Scripts cannot query other forms, so keep the approved values here
+const approvedValues = ['value-one', 'value-two']; // Replace with your approved values
 
 if (!approvedValues.includes(value)) {
   throw new Error(\`Value "\${value}" is not in the approved list\`);
@@ -202,8 +203,8 @@ return true;`,
         code: `// Check submission capacity
 const maxCapacity = 100; // Change this value
 
-const submissions = await queries.queryForm(context.formId);
-const currentCount = submissions.length;
+// Only the last 100 previous submissions are visible to a script
+const currentCount = context.existingSubmissions.length;
 
 if (currentCount >= maxCapacity) {
   throw new Error(\`Sorry, registration is full. Capacity: \${maxCapacity}\`);
