@@ -140,6 +140,16 @@ export class FormsController {
     );
   }
 
+  // Declared before ':id' so it is not captured as a form id
+  @UseGuards(JwtAuthGuard)
+  @Get('my-submissions')
+  async getMySubmissions(
+    @CurrentUser() user: User,
+    @Query('formId') formId?: string,
+  ) {
+    return this.formsService.getMySubmissions(user.id, formId);
+  }
+
   @Get(':id')
   @UseGuards(OptionalAuthGuard)
   @ApiOperation({
@@ -433,15 +443,6 @@ export class FormsController {
       ip,
       userAgent,
     });
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('my-submissions')
-  async getMySubmissions(
-    @CurrentUser() user: User,
-    @Query('formId') formId?: string,
-  ) {
-    return this.formsService.getMySubmissions(user.id, formId);
   }
 
   @UseGuards(JwtAuthGuard)
