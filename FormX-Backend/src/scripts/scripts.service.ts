@@ -519,8 +519,10 @@ return true;`,
 
   private async validateScript(code: string): Promise<void> {
     try {
-      // Use Node.js vm module for syntax validation
-      new vm.Script(code);
+      // Syntax check only; wrapped like executeScript so a top-level return parses
+      new vm.Script(`(async function () {
+${code}
+})`);
     } catch (error) {
       throw new BadRequestException(
         `Script validation failed: ${error instanceof Error ? error.message : String(error)}`,
